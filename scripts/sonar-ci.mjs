@@ -116,6 +116,7 @@ async function main() {
       '-v',
       process.cwd() + ':/usr/src',
       scannerImage,
+      '-Dsonar.working.directory=/usr/src/.scannerwork',
     );
     const scan = spawnSync('docker', scannerArgs, {
       stdio: 'inherit',
