@@ -57,3 +57,5 @@ Passwords use salted scrypt hashes. Random session tokens live in HttpOnly cooki
 Work lives on the `assignment` branch of the personal fork. Submit a pull request to the original cohort repository, resolve HIGH and CRITICAL CodeRabbit findings, then assign the mentor for review. GitHub Actions runs compilation, coverage, formatting, and browser checks. The mentor identity and portal submission fields must come from the programme.
 
 For a separate PostgreSQL connection check, run `npm run db:migrate` and `npm run test:postgres` with your local database running. It creates a synthetic account, checks authentication and CRUD over TCP, then removes only that account and its records.
+
+The SonarQube analysis workflow starts a temporary Community Build server on its GitHub runner, scans with the default Sonar way profiles, checks the quality gate, and uploads issue, hotspot, coverage, and gate reports as the `sonarqube-analysis` artifact. It removes the temporary server when the scan ends and uses no external SonarQube account.

@@ -10,3 +10,4 @@ coverage/
 .scannerwork/
 test-results/
 playwright-report/
+sonar-results/
