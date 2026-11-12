@@ -144,7 +144,11 @@ export function AuthForm({
                 {error}
               </p>
             )}
-            <button className="button primary auth-submit" disabled={busy}>
+            <button
+              type="submit"
+              className="button primary auth-submit"
+              disabled={busy}
+            >
               {busy ? 'Just a moment…' : signup ? 'Create account' : 'Sign in'}
               <ArrowRight size={17} />
             </button>

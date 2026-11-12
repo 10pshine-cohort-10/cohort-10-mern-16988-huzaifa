@@ -135,7 +135,6 @@ export function NoteEditor({
           id="note-title"
           disabled={saving}
           className="title-input"
-          autoFocus
           placeholder="Give your thought a title…"
           maxLength={200}
           value={title}
