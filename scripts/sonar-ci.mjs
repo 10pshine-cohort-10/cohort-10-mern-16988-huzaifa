@@ -143,27 +143,13 @@ async function main() {
       'issues',
       '/api/issues/search?componentKeys=shine-notes&resolved=false&ps=500',
     );
-    const schema = await api('/api/webservices/show?controller=api/hotspots');
-    const search = schema.webServices
-      .flatMap((service) => service.actions ?? [])
-      .find((action) => action.key === 'search');
-    const projectParams =
-      search?.params?.filter((param) =>
-        ['project', 'projectKey'].includes(param.key),
-      ) ?? [];
-    const projectParam =
-      projectParams.find((param) => param.required) ?? projectParams[0];
-    if (!projectParam)
-      throw new Error('The hotspot API did not expose a project parameter.');
-    console.log('Using hotspot API project parameter: ' + projectParam.key);
     const hotspots = await report(
       'hotspots',
-      '/api/hotspots/search?' +
-        new URLSearchParams({ [projectParam.key]: 'shine-notes' }),
+      '/api/hotspots/search?project=shine-notes',
     );
     const measures = await report(
       'measures',
-      '/api/measures/component?component=shine-notes&metricKeys=coverage,line_coverage,branch_coverage,duplicated_lines_density,ncloc,security_hotspots',
+      '/api/measures/component?component=shine-notes&metricKeys=coverage,line_coverage,branch_coverage,duplicated_lines_density,ncloc',
     );
     await report('server', '/api/server/version');
     const summary = {
