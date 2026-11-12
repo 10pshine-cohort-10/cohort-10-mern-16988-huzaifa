@@ -1,0 +1,37 @@
+{
+  "name": "@shine/client",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "jest --runInBand",
+    "coverage": "jest --coverage --runInBand"
+  },
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "@tiptap/react": "3.33.1",
+    "@tiptap/starter-kit": "3.33.1",
+    "lucide-react": "1.72.0"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2",
+    "vite": "8.3.8",
+    "@vitejs/plugin-react": "6.3.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/node": "26.6.6",
+    "jest": "30.5.2",
+    "jest-environment-jsdom": "30.5.2",
+    "@types/jest": "30.0.0",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/user-event": "14.6.10",
+    "@swc/jest": "0.2.39",
+    "@swc/core": "1.16.22",
+    "@playwright/test": "1.65.0"
+  }
+}

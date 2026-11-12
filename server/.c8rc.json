@@ -1,0 +1,9 @@
+{
+  "all": true,
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/index.ts", "src/migrate.ts", "**/<define:*"],
+  "extension": [".ts"],
+  "src": ["src"],
+  "reporter": ["text", "lcovonly"],
+  "exclude-after-remap": true
+}

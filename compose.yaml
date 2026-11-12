@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:17-alpine
+    ports:
+      - '127.0.0.1:${POSTGRES_PORT:-5438}:5432'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-shine}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-shine_notes}
+    volumes:
+      - notes_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  sonarqube:
+    image: sonarqube:community
+    profiles: [quality]
+    ports:
+      - '127.0.0.1:9000:9000'
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: 'true'
+    volumes:
+      - sonar_data:/opt/sonarqube/data
+      - sonar_extensions:/opt/sonarqube/extensions
+  sonar-scanner:
+    image: sonarsource/sonar-scanner-cli:latest
+    profiles: [quality]
+    working_dir: /usr/src
+    environment:
+      SONAR_HOST_URL: http://sonarqube:9000
+      SONAR_TOKEN: ${SONAR_TOKEN:-}
+    volumes:
+      - .:/usr/src
+volumes:
+  notes_data:
+  sonar_data:
+  sonar_extensions:

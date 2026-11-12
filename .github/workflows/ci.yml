@@ -1,0 +1,51 @@
+name: Verify Notes App
+on:
+  push:
+    branches: [assignment]
+  pull_request:
+    branches: [main, develop]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://shine:ci-notes-password@localhost:5432/shine_notes
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: shine
+          POSTGRES_PASSWORD: ci-notes-password
+          POSTGRES_DB: shine_notes
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U shine -d shine_notes"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run format:check
+      - run: npm run coverage
+      - run: npm run db:migrate
+      - run: npm run test:postgres
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-and-browser-results
+          path: |
+            server/coverage
+            client/coverage
+            playwright-report
+            test-results
