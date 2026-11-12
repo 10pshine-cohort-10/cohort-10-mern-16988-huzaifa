@@ -127,30 +127,45 @@ async function main() {
       },
     });
     if (scan.error) throw scan.error;
-    const gate = await api(
-      '/api/qualitygates/project_status?projectKey=shine-notes',
-    );
-    const issues = await api(
-      '/api/issues/search?componentKeys=shine-notes&resolved=false&ps=500',
-    );
-    const hotspots = await api(
-      '/api/hotspots/search?projectKey=shine-notes&ps=500',
-    );
-    const measures = await api(
-      '/api/measures/component?component=shine-notes&metricKeys=coverage,line_coverage,branch_coverage,duplicated_lines_density,ncloc,security_hotspots',
-    );
-    const server = await api('/api/server/version').catch(() => null);
-    for (const [name, data] of Object.entries({
-      gate,
-      issues,
-      hotspots,
-      measures,
-      server,
-    }))
+    async function report(name, path) {
+      const data = await api(path);
       await writeFile(
         output + '/' + name + '.json',
         JSON.stringify(data, null, 2) + '\n',
       );
+      return data;
+    }
+    const gate = await report(
+      'gate',
+      '/api/qualitygates/project_status?projectKey=shine-notes',
+    );
+    const issues = await report(
+      'issues',
+      '/api/issues/search?componentKeys=shine-notes&resolved=false&ps=500',
+    );
+    const schema = await api('/api/webservices/show?controller=api/hotspots');
+    const search = schema.webServices
+      .flatMap((service) => service.actions ?? [])
+      .find((action) => action.key === 'search');
+    const projectParams =
+      search?.params?.filter((param) =>
+        ['project', 'projectKey'].includes(param.key),
+      ) ?? [];
+    const projectParam =
+      projectParams.find((param) => param.required) ?? projectParams[0];
+    if (!projectParam)
+      throw new Error('The hotspot API did not expose a project parameter.');
+    console.log('Using hotspot API project parameter: ' + projectParam.key);
+    const hotspots = await report(
+      'hotspots',
+      '/api/hotspots/search?' +
+        new URLSearchParams({ [projectParam.key]: 'shine-notes' }),
+    );
+    const measures = await report(
+      'measures',
+      '/api/measures/component?component=shine-notes&metricKeys=coverage,line_coverage,branch_coverage,duplicated_lines_density,ncloc,security_hotspots',
+    );
+    await report('server', '/api/server/version');
     const summary = {
       qualityGate: gate.projectStatus.status,
       scannerExitCode: scan.status,
